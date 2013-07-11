@@ -1,8 +1,9 @@
 
-ImageJ Plugin - Virtual Stack Symlink Cycler
+#===============================================================#
+# ImageJ Plugin - Virtual Stack Symlink Cycler                  #
+# Michael Ting							#
+# 10 July 2013							#
+#===============================================================#
 
-Michael Ting
-
-10 July 2013
-
-test
+Make sure to include ij.jar on the classpath when compiling 
+the Java file.
