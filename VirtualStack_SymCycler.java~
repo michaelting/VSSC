@@ -55,8 +55,8 @@ public class VirtualStack_SymCycler implements PlugIn {
 		imp.show();
 
 		try {
-			java.lang.Runtime rt2 = java.lang.Runtime.getRuntime();
-			java.lang.Process q = rt2.exec(new String[]{
+			java.lang.Runtime rt = java.lang.Runtime.getRuntime();
+			java.lang.Process q = rt.exec(new String[]{
 				"bash", "-c",
 				"rm sym1; rm sym2"});
 		}
