@@ -34,9 +34,7 @@ public class VirtualStack_SymCycler implements PlugIn {
 		//IJ.showMessage("path", path);
 		
 		// Create 2 symlinks
-
-
-		//String path = "/home/michael/test/pic1.jpg";
+		// Associate loaded image with 1st symlink
 
 		try {
 
@@ -54,22 +52,22 @@ public class VirtualStack_SymCycler implements PlugIn {
 		//ImagePlus image = openFile(arg);
 		imp.show();
 
+		// Upon closing, delete symlinks
+
+		// why aren't sym1 and sym2 showing up in testlog?
+		// files appear on Desktop, need to re-route them to image directory
+
 		try {
 			java.lang.Runtime rt2 = java.lang.Runtime.getRuntime();
 			java.lang.Process q = rt2.exec(new String[]{
 				"bash", "-c",
 				"rm sym1; rm sym2"});
+			
 		}
 		catch (IOException e) {
 			System.err.println("Caught IOException: " + e.getMessage());
 			IJ.showMessage("exception", e.getMessage());
 		}
-
-		// Associate loaded image with 1st symlink
-
-		// Upon closing, delete symlinks
-
-
 
 	}
 

@@ -7,3 +7,13 @@
 
 Make sure to include ij.jar on the classpath when compiling 
 the Java file.
+
+OR: Copy the Java file to the ImageJ PlugIns folder and choose
+Compile and Run in the Plugins dropdown menu of ImageJ.
+
+Current Issues:
+- Need to be able to generate symlinks in the folder of selected
+  images
+- Address platform-independence when generating symlinks
+- Figure out a more intuitive way to execute shell commands
+  from Java file
