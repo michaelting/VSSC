@@ -25,9 +25,12 @@ public class VirtualStack_SymCycler implements PlugIn {
 
 		// store directory path
 		FileInfo fi = imp.getOriginalFileInfo();
-		String dir = fi.directory;
-		String name = fi.fileName;
-		String path = dir + name;
+		String dir = fi.directory;	// directory with images
+		String name = fi.fileName;	// file name
+		String fpath = dir + name;	// path to file
+
+		String lnk1 = dir+"sym1";
+		String lnk2 = dir+"sym2";
 
 		//IJ.showMessage("directory", dir);
 		//IJ.showMessage("name", name);
@@ -41,7 +44,7 @@ public class VirtualStack_SymCycler implements PlugIn {
 			java.lang.Runtime rt = java.lang.Runtime.getRuntime();
 			java.lang.Process p = rt.exec(new String[]{
 				"bash","-c", 
-				"ln -s " + path + " sym1; ln -s " + path + " sym2; ls > testlog.txt"});
+				"ln -s "+fpath+" "+lnk1+"; ln -s "+fpath+" "+lnk2+"; ls "+dir+"> testlog.txt"});
 			p.waitFor();
 		}
 		catch (Exception e) {
@@ -53,17 +56,19 @@ public class VirtualStack_SymCycler implements PlugIn {
 		//ImagePlus image = openFile(arg);
 		imp.show();
 
-		// Upon closing, delete symlinks
+		// Handle image loading here
+		// Mouse-click or left/right arrow keys --> load prev/next image
+		// Swap symlinks
 
+		// Upon closing, delete symlinks
 		// why aren't sym1 and sym2 showing up in testlog?
 		//	--> need to make sure process completes in order, use Process.waitFor()
-		// files appear on Desktop, need to re-route them to image directory
 
 		try {
 			java.lang.Runtime rt2 = java.lang.Runtime.getRuntime();
 			java.lang.Process q = rt2.exec(new String[]{
 				"bash", "-c",
-				"rm sym1; rm sym2"});
+				"rm "+lnk1+"; rm "+lnk2});
 			q.waitFor();
 			
 		}
