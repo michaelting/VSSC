@@ -42,9 +42,10 @@ public class VirtualStack_SymCycler implements PlugIn {
 			java.lang.Process p = rt.exec(new String[]{
 				"bash","-c", 
 				"ln -s " + path + " sym1; ln -s " + path + " sym2; ls > testlog.txt"});
+			p.waitFor();
 		}
-		catch (IOException e) {
-			System.err.println("Caught IOException: " + e.getMessage());
+		catch (Exception e) {
+			System.err.println("Caught Exception: " + e.getMessage());
 			IJ.showMessage("exception", e.getMessage());
 		}
 
@@ -55,6 +56,7 @@ public class VirtualStack_SymCycler implements PlugIn {
 		// Upon closing, delete symlinks
 
 		// why aren't sym1 and sym2 showing up in testlog?
+		//	--> need to make sure process completes in order, use Process.waitFor()
 		// files appear on Desktop, need to re-route them to image directory
 
 		try {
@@ -62,12 +64,14 @@ public class VirtualStack_SymCycler implements PlugIn {
 			java.lang.Process q = rt2.exec(new String[]{
 				"bash", "-c",
 				"rm sym1; rm sym2"});
+			q.waitFor();
 			
 		}
-		catch (IOException e) {
-			System.err.println("Caught IOException: " + e.getMessage());
+		catch (Exception e) {
+			System.err.println("Caught Exception: " + e.getMessage());
 			IJ.showMessage("exception", e.getMessage());
 		}
+
 
 	}
 
