@@ -12,12 +12,14 @@ import ij.ImagePlus;
 
 import java.util.*;
 import java.io.*;
-import java.lang.*;
+import java.awt.event.*;
 
-public class VirtualStack_SymCycler implements PlugIn {
+public class VirtualStack_SymCycler implements PlugIn, KeyListener {
 
 	public void run(String arg) {
 		//IJ.showMessage("CGSImageCycler_","Hello world!");
+
+		new VirtualStack_SymCycler();
 
 		// Open file from dialog box and store directory path
 		Opener op = new Opener();
@@ -76,13 +78,12 @@ public class VirtualStack_SymCycler implements PlugIn {
 			System.err.println("Caught Exception: " + e.getMessage());
 			IJ.showMessage("exception", e.getMessage());
 		}
-
-
 	}
 
 	/*
 	Opens a file in ImageJ
 	*/
+/*
 	private ImagePlus openFile(String arg) {
 		Opener op = new Opener();
 		ImagePlus imp = op.openImage(null);
@@ -98,5 +99,30 @@ public class VirtualStack_SymCycler implements PlugIn {
 	private void getFilePath(String arg) {
 		return;
 	}
+*/
+
+	public void keyPressed(KeyEvent e) {
+
+		int keyCode = e.getKeyCode();
+
+		switch(keyCode) {
+			case KeyEvent.VK_LEFT:
+				// left arrow
+				// go to previous image in folder
+				//IJ.showMessage("CGSImageCycler_","Left!");
+				System.out.println("left!");
+				break;
+			case KeyEvent.VK_RIGHT:
+				// right arrow:
+				// go to next image in folder
+				//IJ.showMessage("CGSImageCycler_","Right!");
+				System.out.println("right!");
+				break;
+		}
+
+	}
+
+	public void keyReleased(KeyEvent e) {}
+	public void keyTyped(KeyEvent e) {}
 
 }

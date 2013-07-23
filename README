@@ -2,19 +2,27 @@
 #===============================================================#
 # ImageJ Plugin - Virtual Stack Symlink Cycler                  #
 # Michael Ting							#
-# 10 July 2013							#
+# 22 July 2013							#
 #===============================================================#
 
 Make sure to include ij.jar on the classpath when compiling 
 the Java file.
 
-OR: Copy the Java file to the ImageJ PlugIns folder and choose
-Compile and Run in the Plugins dropdown menu of ImageJ.
+OR: 
+
+Copy the Java file to the ImageJ PlugIns folder and choose
+Compile and Run in the Plugins dropdown menu of ImageJ. Ensure
+that ImageJ is using the correct JRE (if outdated, deleting
+ImageJ's JRE will default the JRE to the system's JRE).
+
+Immediate Issues:
+- Implement KeyListener interface to allow for image cycling in
+  the current folder
+- Use threading for image cycling (Virtual Stack?)
 
 Current Issues:
-- Need to be able to generate symlinks in the folder of selected
-  images
-- Address platform-independence when generating symlinks
+- (?) Address platform-independence when generating symlinks
 - Figure out a more intuitive way to execute shell commands
   from Java file
 	- Currently using java.lang.Runtime and java.lang.Process
+	- Apache Commons Exec?
