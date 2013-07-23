@@ -1,7 +1,7 @@
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
-import java.awt.*;
+//import java.awt.*;
 import ij.plugin.*;
 import ij.plugin.frame.*;
 
@@ -14,25 +14,49 @@ import java.util.*;
 import java.io.*;
 import java.awt.event.*;
 
-public class VirtualStack_SymCycler implements PlugIn, KeyListener {
+public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListener {
+
+	FileInfo fi;
+	String dir;
+	String name;
+	String fpath;
+
+	File dirobj;
+	File filenames[];
+
+	String lnk1;
+	String lnk2;
+
+	ImageWindow win;
+	ImageCanvas canvas;
 
 	public void run(String arg) {
 		//IJ.showMessage("CGSImageCycler_","Hello world!");
-
-		new VirtualStack_SymCycler();
 
 		// Open file from dialog box and store directory path
 		Opener op = new Opener();
 		ImagePlus imp = op.openImage(null);
 
 		// store directory path
-		FileInfo fi = imp.getOriginalFileInfo();
-		String dir = fi.directory;	// directory with images
-		String name = fi.fileName;	// file name
-		String fpath = dir + name;	// path to file
+		fi = imp.getOriginalFileInfo();
+		dir = fi.directory;	// directory with images
+		name = fi.fileName;	// file name
+		fpath = dir + name;	// path to file
 
-		String lnk1 = dir+"sym1";
-		String lnk2 = dir+"sym2";
+		dirobj = new File(dir);
+		filenames = dirobj.listFiles();
+/*
+		for (int i=0; i < filenames.length; i++) {
+			IJ.log(filenames[i]);
+		}
+*/
+
+		for (File file : filenames) {
+			IJ.log(file.getName());
+		}
+
+		lnk1 = dir+"sym1";
+		lnk2 = dir+"sym2";
 
 		//IJ.showMessage("directory", dir);
 		//IJ.showMessage("name", name);
@@ -42,7 +66,6 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener {
 		// Associate loaded image with 1st symlink
 
 		try {
-
 			java.lang.Runtime rt = java.lang.Runtime.getRuntime();
 			java.lang.Process p = rt.exec(new String[]{
 				"bash","-c", 
@@ -58,9 +81,15 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener {
 		//ImagePlus image = openFile(arg);
 		imp.show();
 
-		// Handle image loading here
-		// Mouse-click or left/right arrow keys --> load prev/next image
-		// Swap symlinks
+		// Initialize the KeyListener
+		win = imp.getWindow();
+		canvas = win.getCanvas();
+
+		win.removeKeyListener(IJ.getInstance());
+		canvas.removeKeyListener(IJ.getInstance());
+		win.addKeyListener(this);
+		canvas.addKeyListener(this);
+		ImagePlus.addImageListener(this);
 
 		// Upon closing, delete symlinks
 		// why aren't sym1 and sym2 showing up in testlog?
@@ -80,27 +109,6 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener {
 		}
 	}
 
-	/*
-	Opens a file in ImageJ
-	*/
-/*
-	private ImagePlus openFile(String arg) {
-		Opener op = new Opener();
-		ImagePlus imp = op.openImage(null);
-		return imp;
-	}
-
-	private String getDirPath(String arg) {
-		OpenDialog od = new OpenDialog("Choose an image directory", null);
-		String dir = od.getDirectory();
-		return dir;
-	}
-
-	private void getFilePath(String arg) {
-		return;
-	}
-*/
-
 	public void keyPressed(KeyEvent e) {
 
 		int keyCode = e.getKeyCode();
@@ -109,20 +117,27 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener {
 			case KeyEvent.VK_LEFT:
 				// left arrow
 				// go to previous image in folder
-				//IJ.showMessage("CGSImageCycler_","Left!");
-				System.out.println("left!");
+				IJ.log("left");
 				break;
 			case KeyEvent.VK_RIGHT:
 				// right arrow:
 				// go to next image in folder
-				//IJ.showMessage("CGSImageCycler_","Right!");
-				System.out.println("right!");
+				IJ.log("right");
 				break;
 		}
 
 	}
 
+	public void imageClosed(ImagePlus imp) {
+		if (win!=null)
+		    win.removeKeyListener(this);
+		if (canvas!=null)
+		    canvas.removeKeyListener(this);
+		ImagePlus.removeImageListener(this);
+	}
+
 	public void keyReleased(KeyEvent e) {}
 	public void keyTyped(KeyEvent e) {}
-
+    	public void imageOpened(ImagePlus imp) {}
+    	public void imageUpdated(ImagePlus imp) {}
 }
