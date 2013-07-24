@@ -2,8 +2,22 @@
 #===============================================================#
 # ImageJ Plugin - Virtual Stack Symlink Cycler                  #
 # Michael Ting							#
-# 22 July 2013							#
+# 23 July 2013							#
 #===============================================================#
+
+#=======#
+# Usage #
+#=======#
+
+* Place the plugin file in the ImageJ plugins folder.
+* Open ImageJ and compile and run the plugin.
+* The plugin will prompt you to open an image.
+* You can cycle between images in the folder (alphabetically)
+  by pressing the left and right arrow keys.
+
+#=======#
+# Notes #
+#=======#
 
 Make sure to include ij.jar on the classpath when compiling 
 the Java file.
@@ -15,10 +29,15 @@ Compile and Run in the Plugins dropdown menu of ImageJ. Ensure
 that ImageJ is using the correct JRE (if outdated, deleting
 ImageJ's JRE will default the JRE to the system's JRE).
 
+#========#
+# Issues #
+#========#
+
 Immediate Issues:
-- Implement KeyListener interface to allow for image cycling in
-  the current folder
 - Use threading for image cycling (Virtual Stack?)
+- Both symlinks are overwritten when re-writing the first symlink
+	- Figure out why this is happening, although not
+	  a major issue since the plugin still works
 
 Current Issues:
 - (?) Address platform-independence when generating symlinks

@@ -16,26 +16,33 @@ import java.awt.event.*;
 
 public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListener {
 
-	FileInfo fi;
-	String dir;
-	String name;
-	String fpath;
+	private Opener op;
+	private ImagePlus imp;
 
-	File dirobj;
-	File filenames[];
+	private FileInfo fi;
+	private String dir;
+	private String name;
+	private String fpath;
 
-	String lnk1;
-	String lnk2;
+	private File dirobj;
+	private File filenames[];
+	private int currindex = -1;
 
-	ImageWindow win;
-	ImageCanvas canvas;
+	private String lnk1;
+	private String lnk2;
+	private int symdex = 0;
+	private final int SYMFIRST = 0;
+	private final int SYMSECOND = 1;
+
+	private ImageWindow win;
+	private ImageCanvas canvas;
 
 	public void run(String arg) {
 		//IJ.showMessage("CGSImageCycler_","Hello world!");
 
 		// Open file from dialog box and store directory path
-		Opener op = new Opener();
-		ImagePlus imp = op.openImage(null);
+		op = new Opener();
+		imp = op.openImage(null);
 
 		// store directory path
 		fi = imp.getOriginalFileInfo();
@@ -45,14 +52,21 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 
 		dirobj = new File(dir);
 		filenames = dirobj.listFiles();
+		Arrays.sort(filenames);
 /*
-		for (int i=0; i < filenames.length; i++) {
-			IJ.log(filenames[i]);
+		for (File file : filenames) {
+			IJ.log(file.getName());
 		}
 */
-
-		for (File f : filenames) {
-			IJ.log(filenames.getName());
+		
+		for (int i = 0; i < filenames.length; i++) {
+			if (filenames[i].getName().equals(name)) {
+				currindex = i;			
+			}
+		}
+		// error checking
+		if (currindex < 0) {
+			IJ.log("Filename not detected in filenames[]!");
 		}
 
 		lnk1 = dir+"sym1";
@@ -81,7 +95,7 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 		//ImagePlus image = openFile(arg);
 		imp.show();
 
-		// Initialize the KeyListener
+		// Initialize the KeyListener using the open image
 		win = imp.getWindow();
 		canvas = win.getCanvas();
 
@@ -90,10 +104,106 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 		win.addKeyListener(this);
 		canvas.addKeyListener(this);
 		ImagePlus.addImageListener(this);
+	}
 
-		// Upon closing, delete symlinks
-		// why aren't sym1 and sym2 showing up in testlog?
-		//	--> need to make sure process completes in order, use Process.waitFor()
+	// Load prev/next image based on arrow key press
+	public void keyPressed(KeyEvent e) {
+
+		int keyCode = e.getKeyCode();
+
+		switch(keyCode) {
+			case KeyEvent.VK_LEFT:
+				// left arrow
+				// go to previous image in folder
+				IJ.log("left");
+
+				// set new image to load as prev
+				currindex -= 1;
+				// loop to end of file list
+				if (currindex < 0) {
+					currindex = filenames.length-1;				
+				}
+				break;
+			case KeyEvent.VK_RIGHT:
+				// right arrow:
+				// go to next image in folder
+				IJ.log("right");
+
+				// set new image to load as next
+				currindex += 1;
+				// loop to front of list
+				if (currindex >= filenames.length) {
+					currindex = 0;
+				}
+
+				break;
+		}
+
+		String newname = filenames[currindex].getName();
+		String newfpath = dir + newname;
+
+		// update symlink to new usage
+		symdex = (symdex+1) % 2;	// alternate between 0 and 1
+
+		// load image
+		switch(symdex) {
+			case SYMFIRST:	// symdex == 0
+				// update sym1
+				try {
+					java.lang.Runtime rt1 = java.lang.Runtime.getRuntime();
+					java.lang.Process psym1 = rt1.exec(new String[]{
+						"bash","-c", 
+						"ln -nsf "+newfpath+" "+lnk1});
+					psym1.waitFor();
+				}
+				catch (Exception exc) {
+					System.err.println("Caught Exception: " + exc.getMessage());
+					IJ.showMessage("exception", exc.getMessage());
+				}
+			case SYMSECOND:	// symdex == 1
+				// update sym2
+				try {
+					java.lang.Runtime rt2 = java.lang.Runtime.getRuntime();
+					java.lang.Process psym2 = rt2.exec(new String[]{
+						"bash","-c", 
+						"ln -nsf "+newfpath+" "+lnk2});
+					psym2.waitFor();
+				}
+				catch (Exception exc) {
+					System.err.println("Caught Exception: " + exc.getMessage());
+					IJ.showMessage("exception", exc.getMessage());
+				}
+		}
+
+		ImagePlus newimp = op.openImage(newfpath);
+		imp.setImage(newimp);
+		imp.updateImage();
+
+		IJ.log("lnk1: " + lnk1);
+		IJ.log("lnk2: " + lnk2);
+
+
+		try {
+			java.lang.Runtime rt3 = java.lang.Runtime.getRuntime();
+			java.lang.Process pcheck = rt3.exec(new String[]{
+				"bash","-c", 
+				"ls -la "+dir+" >> lscheck.txt"});
+			pcheck.waitFor();
+		}
+		catch (Exception exc) {
+			System.err.println("Caught Exception: " + exc.getMessage());
+			IJ.showMessage("exception", exc.getMessage());
+		}
+
+	}
+
+	// Upon closing, delete symlinks
+	public void imageClosed(ImagePlus imp) {
+		if (win!=null)
+		    win.removeKeyListener(this);
+		if (canvas!=null)
+		    canvas.removeKeyListener(this);
+		ImagePlus.removeImageListener(this);
 
 		try {
 			java.lang.Runtime rt2 = java.lang.Runtime.getRuntime();
@@ -107,33 +217,6 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 			System.err.println("Caught Exception: " + e.getMessage());
 			IJ.showMessage("exception", e.getMessage());
 		}
-	}
-
-	public void keyPressed(KeyEvent e) {
-
-		int keyCode = e.getKeyCode();
-
-		switch(keyCode) {
-			case KeyEvent.VK_LEFT:
-				// left arrow
-				// go to previous image in folder
-				IJ.log("left");
-				break;
-			case KeyEvent.VK_RIGHT:
-				// right arrow:
-				// go to next image in folder
-				IJ.log("right");
-				break;
-		}
-
-	}
-
-	public void imageClosed(ImagePlus imp) {
-		if (win!=null)
-		    win.removeKeyListener(this);
-		if (canvas!=null)
-		    canvas.removeKeyListener(this);
-		ImagePlus.removeImageListener(this);
 	}
 
 	public void keyReleased(KeyEvent e) {}
