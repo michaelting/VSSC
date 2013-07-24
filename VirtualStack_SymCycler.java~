@@ -51,7 +51,7 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 		// store all file names in directory
 		dirobj = new File(dir);
 		filenames = dirobj.listFiles();
-		Arrays.sort(filenames);
+		Arrays.sort(filenames);		// sort files alphabetically
 		
 		// get position of current open image in filelist
 		for (int i = 0; i < filenames.length; i++) {
@@ -66,8 +66,8 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 		}
 
 		// Create 2 symlinks
-		lnk1 = dir+"sym1";
-		lnk2 = dir+"sym2";
+		lnk1 = dir + "sym1";
+		lnk2 = dir + "sym2";
 		currlnk = lnk1;
 		
 		// Associate loaded image with symlinks
@@ -75,7 +75,9 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 			java.lang.Runtime rt = java.lang.Runtime.getRuntime();
 			java.lang.Process p = rt.exec(new String[]{
 				"bash","-c", 
-				"ln -s "+fpath+" "+lnk1+"; ln -s "+fpath+" "+lnk2+"; ls "+dir+"> testlog.txt"});
+				"ln -s " + fpath + " " + lnk1 + "; " +
+				"ln -s " + fpath + " " + lnk2 + "; " +
+				"ls " + dir + "> testlog.txt"});
 			p.waitFor();
 		}
 		catch (Exception e) {
@@ -155,7 +157,7 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 			java.lang.Runtime rtsym = java.lang.Runtime.getRuntime();
 			java.lang.Process psym = rtsym.exec(new String[]{
 				"bash","-c", 
-				"ln -nsf "+newfpath+" "+currlnk});
+				"ln -nsf " + newfpath + " " + currlnk});
 			psym.waitFor();
 		}
 		catch (Exception exc) {
@@ -167,7 +169,6 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 		ImagePlus newimp = op.openImage(currlnk);
 		imp.setImage(newimp);
 		imp.setTitle(newname);
-		//imp.updateImage();
 	}
 
 	// Upon closing, delete symlinks
@@ -182,7 +183,8 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 			java.lang.Runtime rtclose = java.lang.Runtime.getRuntime();
 			java.lang.Process pclose = rtclose.exec(new String[]{
 				"bash", "-c",
-				"rm "+lnk1+"; rm "+lnk2});
+				"rm " + lnk1 + "; " +
+				"rm "+lnk2});
 			pclose.waitFor();			
 		}
 		catch (Exception e) {
