@@ -167,7 +167,6 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 		ImagePlus newimp = op.openImage(currlnk);
 		imp.setImage(newimp);
 		imp.setTitle(newname);
-		imp.updateImage();
 	}
 
 	// Upon closing, delete symlinks
