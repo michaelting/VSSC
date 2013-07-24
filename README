@@ -2,8 +2,25 @@
 #===============================================================#
 # ImageJ Plugin - Virtual Stack Symlink Cycler                  #
 # Michael Ting							#
-# 23 July 2013							#
+# v1.0								#
+# Updated 24 July 2013						#
 #===============================================================#
+
+#==============#
+# Introduction #
+#==============#
+
+Stacks in ImageJ are used to load sequences of images, although
+this can become problematic when the size of the images are 
+not able to fit in RAM. ImageJ also has a function to load
+image sequences as Virtual Stacks, which load images from
+disk memory rather than RAM. However, Virtual Stacks still
+have the limitation of requiring all loaded images to have
+the same dimensions.
+
+This plugin does not implement a VirtualStack; rather, it
+simulates a VirtualStack by loading images using a cycling
+pair of symbolic links in the file system.
 
 #=======#
 # Usage #
@@ -14,6 +31,13 @@
 * The plugin will prompt you to open an image.
 * You can cycle between images in the folder (alphabetically)
   by pressing the left and right arrow keys.
+
+#=================#
+# Version History #
+#=================#
+
+* v1.0	- Working version of plugin. Will be modified for greater
+	  functionality.
 
 #=======#
 # Notes #
@@ -35,9 +59,6 @@ ImageJ's JRE will default the JRE to the system's JRE).
 
 Immediate Issues:
 - Use threading for image cycling (Virtual Stack?)
-- Both symlinks are overwritten when re-writing the first symlink
-	- Figure out why this is happening, although not
-	  a major issue since the plugin still works
 
 Current Issues:
 - (?) Address platform-independence when generating symlinks
@@ -45,3 +66,4 @@ Current Issues:
   from Java file
 	- Currently using java.lang.Runtime and java.lang.Process
 	- Apache Commons Exec?
+

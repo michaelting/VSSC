@@ -1,3 +1,10 @@
+/*
+ * ImageJ Plugin - Virtual Stack Symlink Cycler
+ * Michael Ting
+ * v1.0
+ * Updated 24 July 2013
+ */
+
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
@@ -36,6 +43,9 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 	private ImageWindow win;
 	private ImageCanvas canvas;
 
+	/*
+	 * Initialize the plugin when the plugin is run from ImageJ
+	 */
 	public void run(String arg) {
 
 		// Open file from dialog box and store directory path
@@ -99,7 +109,9 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 		ImagePlus.addImageListener(this);
 	}
 
-	// Load prev/next image based on arrow key press
+	/*
+	 * Loads previous/next image based on arrow key press
+	 */
 	public void keyPressed(KeyEvent e) {
 
 		int keyCode = e.getKeyCode();
@@ -171,7 +183,9 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 		imp.setTitle(newname);
 	}
 
-	// Upon closing, delete symlinks
+	/* 
+	 * Upon closing, delete symlinks used for loading images
+	 */
 	public void imageClosed(ImagePlus imp) {
 		if (win!=null)
 		    win.removeKeyListener(this);
@@ -193,6 +207,9 @@ public class VirtualStack_SymCycler implements PlugIn, KeyListener, ImageListene
 		}
 	}
 
+	/*
+	 * Unused interface methods
+	 */
 	public void keyReleased(KeyEvent e) {}
 	public void keyTyped(KeyEvent e) {}
     	public void imageOpened(ImagePlus imp) {}
