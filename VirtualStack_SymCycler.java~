@@ -5,7 +5,6 @@ import ij.plugin.*;
 import ij.plugin.frame.*;
 
 import ij.io.FileInfo;
-import ij.io.OpenDialog;
 import ij.io.Opener;
 import ij.ImagePlus;
 
